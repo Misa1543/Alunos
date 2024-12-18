@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aluno - Escola Online Nova Geração</title>
+    <style>
+        /* Estilos do layout */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+        header {
+            background-color: #0056b3;
+            color: #fff;
+            padding: 1rem;
+            text-align: center;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .section {
+            background: #fff;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .section h2 {
+            margin-top: 0;
+        }
+        .activities {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .activity-item {
+            border-bottom: 1px solid #ddd;
+            padding: 1rem;
+        }
+        .view-schedule-button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 1rem;
+            width: 100%;
+            cursor: pointer;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Atividades - Escola Online Nova Geração</h1>
+    </header>
+
+    <div class="container">
+        <div class="main-content">
+            <div class="section activities">
+                <h2>Atividades Disponíveis</h2>
+                <div id="activity-list">
+                    <!-- As atividades criadas pelo professor aparecerão aqui -->
+                </div>
+            </div>
+
+            <div class="section schedule">
+                <h2>Horário de Aula</h2>
+                <button class="view-schedule-button" onclick="window.location.href='https://1drv.ms/w/c/f3ee7e43eee611e2/EeQvo44nfZ5NjZ0mE-6bK2QB3HTRYzOZpqHh3AikLdJhdg?e=9N6Z9N'">
+                    Ver Horário de Aula
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const activityList = document.getElementById("activity-list");
+
+            // Função para carregar as atividades e exibi-las
+            function loadActivities() {
+                const activities = JSON.parse(localStorage.getItem("activities")) || [];
+                activityList.innerHTML = "";
+
+                activities.forEach(activity => {
+                    const div = document.createElement("div");
+                    div.classList.add("activity-item");
+
+                    // Verifica se a atividade foi criada nas últimas 24 horas
+                    const activityDate = new Date(activity.date);
+                    const currentDate = new Date();
+                    const timeDiff = currentDate - activityDate;
+                    const oneDayInMs = 24 * 60 * 60 * 1000;
+                    const isNew = timeDiff < oneDayInMs;
+
+                    div.innerHTML = `
+                        <strong>${activity.title}</strong><br>
+                        <em>${activity.date}</em><br>
+                        <p>${activity.description}</p><br>
+                        ${activity.link ? `<a href="${activity.link}" target="_blank">Link da Atividade</a><br>` : ''}
+                        ${activity.file ? `<a href="${URL.createObjectURL(new Blob([activity.file]))}" download="${activity.file}">Download do Arquivo</a><br>` : ''}
+                        ${isNew ? `<span style="color: green;">Nova Atividade - ${activity.date}</span>` : ''}
+                    `;
+                    activityList.appendChild(div);
+                });
+            }
+
+            // Atualiza a lista de atividades sempre que a página for carregada
+            loadActivities();
+
+            // Adiciona um listener para atualizações em tempo real
+            window.addEventListener("storage", (event) => {
+                if (event.key === "activities") {
+                    loadActivities();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+
+
+
+
